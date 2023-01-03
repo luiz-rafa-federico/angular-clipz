@@ -1,0 +1,18 @@
+<input
+  type="text"
+  class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
+  placeholder="Enter Name"
+  formControlName="controlName"
+/>
+<!--  minlength="3" can be also inside the input tag -->
+<p
+  class="text-red-400"
+  *ngIf="(!controlName?.valid && controlName?.dirty) || controlName?.touched"
+>
+  <!-- name.touched is true when the user clicks on the field and then clicks out of it -->
+  <!-- *ngIf="this.registerForm.controls.name.errors?.required" -->
+  <!-- *ngIf="this.registerForm.controls.name.errors?.minlength" -->
+  <!-- customized message regarding length: The value you inputted is {{registerForm.controls.name.errors?.minlength.actualLength}} -->
+  <!-- customized message regarding length: It must be {{registerForm.controls.name.errors?.minlength.requiredLength}} characters long. -->
+  Name is required and must be at least 3 characters long
+</p>
