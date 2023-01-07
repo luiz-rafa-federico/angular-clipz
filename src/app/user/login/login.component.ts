@@ -1,10 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  AbstractControl,
-  Validators,
-} from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -12,12 +7,18 @@ import {
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  loginForm = new FormGroup({
-    email: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
-  });
+  credentials = {
+    email: '',
+    password: '',
+  };
 
-  onSubmit() {
-    const payload = this.loginForm.getRawValue();
+  onSubmit(form: NgForm) {
+    const { email, password } = form.value;
+
+    console.log('EMAIL', email);
+    console.log('PASSWORD', password);
+
+    // or due to the ngModel 2-way-data-binding, we can console log
+    // the crendentials object directly and check if the info has been submitted
   }
 }
