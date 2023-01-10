@@ -12,7 +12,7 @@ export class RegisterService {
   async registerUser(userInfo: IUserCredentials) {
     const { email, name, password, age, phoneNumber } = userInfo;
 
-    await this.auth.createUserWithEmailAndPassword(email, password);
+    await this.auth.createUserWithEmailAndPassword(email, password as string);
 
     await this.saveUserOnDB(email, name, age, phoneNumber);
   }
@@ -23,7 +23,7 @@ export class RegisterService {
     age: string,
     phoneNumber: string
   ) {
-    await this.db.collection('users').add({
+    await this.db.collection<IUserCredentials>('users').add({
       name,
       email,
       age,

@@ -74,6 +74,11 @@ export class RegisterComponent {
     this.alertColor = 'green';
     this.registerForm.reset();
   }
+
+  //GETTERS
+  get userName(): AbstractControl | null {
+    return this.registerForm.get('name');
+  }
 }
 
 // REGEX
