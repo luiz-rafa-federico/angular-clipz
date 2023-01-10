@@ -1,13 +1,20 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+} from '@angular/fire/compat/firestore';
 import { IUserCredentials } from '../shared/types/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RegisterService {
-  constructor(private auth: AngularFireAuth, private db: AngularFirestore) {}
+  private usersCollection: AngularFirestoreCollection<IUserCredentials>;
+
+  constructor(private auth: AngularFireAuth, private db: AngularFirestore) {
+    this.usersCollection = db.collection('users');
+  }
 
   async registerUser(userInfo: IUserCredentials) {
     const { email, name, password, age, phoneNumber } = userInfo;
@@ -23,7 +30,7 @@ export class RegisterService {
     age: string,
     phoneNumber: string
   ) {
-    await this.db.collection<IUserCredentials>('users').add({
+    await this.usersCollection.add({
       name,
       email,
       age,
