@@ -6,6 +6,9 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { RegisterService } from 'src/app/services/register.service';
+import { IUserCredentials } from 'src/app/shared/types/user';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -43,14 +46,33 @@ export class RegisterComponent {
     phoneNumber: this.phoneNumber,
   });
 
-  onSubmit() {
+  inSubmission = false;
+
+  constructor(private registerService: RegisterService) {}
+
+  async onSubmit() {
     this.showAlert = true;
     this.alertMessage = 'Please, wait! Your account is being created';
     this.alertColor = 'blue';
+    this.inSubmission = true;
 
-    const payload = this.registerForm.getRawValue();
+    const userCredentials: IUserCredentials = this.registerForm.getRawValue();
 
-    console.log(payload);
+    try {
+      await this.registerService.registerUser(userCredentials);
+
+      this.inSubmission = false;
+    } catch (err) {
+      console.error(err);
+      this.alertMessage = `${err}`;
+      this.alertColor = 'red';
+      this.inSubmission = false;
+      return;
+    }
+
+    this.alertMessage = 'Success! Your account has been created!';
+    this.alertColor = 'green';
+    this.registerForm.reset();
   }
 }
 
