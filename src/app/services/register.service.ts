@@ -4,6 +4,7 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
+import { map, Observable } from 'rxjs';
 import { IUserCredentials } from '../shared/types/user';
 
 @Injectable({
@@ -11,9 +12,11 @@ import { IUserCredentials } from '../shared/types/user';
 })
 export class RegisterService {
   private usersCollection: AngularFirestoreCollection<IUserCredentials>;
+  public isAuthenticated$: Observable<boolean>;
 
   constructor(private auth: AngularFireAuth, private db: AngularFirestore) {
     this.usersCollection = db.collection('users');
+    this.isAuthenticated$ = auth.user.pipe(map((user) => !!user));
   }
 
   async registerUser(userInfo: IUserCredentials) {
