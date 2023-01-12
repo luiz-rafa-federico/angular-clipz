@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { ModalService } from '../services/modal.service';
 import { RegisterService } from '../services/register.service';
 
