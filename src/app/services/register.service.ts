@@ -19,22 +19,20 @@ export class RegisterService {
   async registerUser(userInfo: IUserCredentials) {
     const { email, name, password, age, phoneNumber } = userInfo;
 
-    await this.auth.createUserWithEmailAndPassword(email, password as string);
+    const userCredentials = await this.auth.createUserWithEmailAndPassword(
+      email,
+      password as string
+    );
 
-    await this.saveUserOnDB(email, name, age, phoneNumber);
-  }
-
-  async saveUserOnDB(
-    email: string,
-    name: string,
-    age: string,
-    phoneNumber: string
-  ) {
-    await this.usersCollection.add({
+    await this.usersCollection.doc(userCredentials.user?.uid).set({
       name,
       email,
       age,
       phoneNumber,
+    });
+
+    await userCredentials.user?.updateProfile({
+      displayName: name,
     });
   }
 }

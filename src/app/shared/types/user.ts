@@ -4,4 +4,5 @@ export interface IUserCredentials {
   name: string;
   age: string;
   phoneNumber: string;
+  uid?: string | undefined;
 }
