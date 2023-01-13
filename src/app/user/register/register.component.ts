@@ -5,8 +5,9 @@ import {
   AbstractControl,
   Validators,
 } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
+import { CommonFunctionsService } from 'src/app/services/common-functions.service';
 
-import { RegisterService } from 'src/app/services/register.service';
 import { IUserCredentials } from 'src/app/shared/types/user';
 import { EmailTaken } from '../validators/email-taken';
 import { RegisterValidators } from '../validators/register-validators';
@@ -58,8 +59,9 @@ export class RegisterComponent {
   inSubmission = false;
 
   constructor(
-    private registerService: RegisterService,
-    private emailTaken: EmailTaken
+    private authService: AuthService,
+    private emailTaken: EmailTaken,
+    private commonFunctions: CommonFunctionsService
   ) {}
 
   async onSubmit() {
@@ -71,12 +73,12 @@ export class RegisterComponent {
     const userCredentials: IUserCredentials = this.registerForm.getRawValue();
 
     try {
-      await this.registerService.registerUser(userCredentials);
+      await this.authService.registerUser(userCredentials);
 
       this.inSubmission = false;
     } catch (err) {
       console.error(err);
-      this.alertMessage = this.handleServerError(err);
+      this.alertMessage = this.commonFunctions.handleServerError(err);
       this.alertColor = 'red';
       this.inSubmission = false;
       return;
@@ -85,29 +87,6 @@ export class RegisterComponent {
     this.alertMessage = 'Success! Your account has been created!';
     this.alertColor = 'green';
     this.registerForm.reset();
-  }
-
-  handleServerError(err: any): string {
-    switch (err.code) {
-      case 'auth/missing-email':
-        this.alertMessage = `Missing email address`;
-        break;
-      case 'auth/invalid-email':
-        this.alertMessage = `Insert your email address and password`;
-        break;
-      case 'auth/email-already-in-use':
-        this.alertMessage = `This email address is already in use by another account`;
-        break;
-      case 'auth/user-not-found':
-        this.alertMessage = `User not found. Verify your credentials`;
-        break;
-      case 'auth/wrong-password':
-        this.alertMessage = `Password and email address mismatch`;
-        break;
-      default:
-        this.alertMessage = `Something went wrong`;
-    }
-    return this.alertMessage;
   }
 
   //GETTERS

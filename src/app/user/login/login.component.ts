@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { NgForm } from '@angular/forms';
+import { CommonFunctionsService } from 'src/app/services/common-functions.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,10 @@ export class LoginComponent {
   alertColor = 'blue';
   inSubmission = false;
 
-  constructor(private auth: AngularFireAuth) {}
+  constructor(
+    private auth: AngularFireAuth,
+    private commonFunctions: CommonFunctionsService
+  ) {}
 
   async onSubmit(form: NgForm) {
     this.showAlert = true;
@@ -32,7 +36,7 @@ export class LoginComponent {
       await this.auth.signInWithEmailAndPassword(email, password);
     } catch (err) {
       console.log(err);
-      this.alertMessage = `${err}`;
+      this.alertMessage = this.commonFunctions.handleServerError(err);
       this.alertColor = 'red';
       this.inSubmission = false;
       return;

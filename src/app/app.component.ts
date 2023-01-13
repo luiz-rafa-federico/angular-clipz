@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { RegisterService } from './services/register.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,5 +10,5 @@ import { RegisterService } from './services/register.service';
 export class AppComponent {
   title = 'clipz';
 
-  constructor(public auth: RegisterService) {}
+  constructor(public auth: AuthService) {}
 }

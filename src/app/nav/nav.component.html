@@ -13,7 +13,7 @@
           *ngIf="!(auth.isAuthenticated$ | async); else authLinks"
           (click)="openModal()"
         >
-          <a class="px-2" href="#">Login / Register</a>
+          <a class="px-2 clickable">Login / Register</a>
         </li>
         <ng-template #authLinks>
           <li>
@@ -35,7 +35,9 @@
             >
           </li>
           <li>
-            <a class="px-2" routerLink="#" (click)="logout($event)">Logout</a>
+            <p class="px-2 clickable" (click)="this.auth.logout($event)">
+              Logout
+            </p>
           </li>
         </ng-template>
         <li>
