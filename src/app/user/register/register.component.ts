@@ -8,6 +8,8 @@ import {
 
 import { RegisterService } from 'src/app/services/register.service';
 import { IUserCredentials } from 'src/app/shared/types/user';
+import { EmailTaken } from '../validators/email-taken';
+import { RegisterValidators } from '../validators/register-validators';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +18,11 @@ import { IUserCredentials } from 'src/app/shared/types/user';
 })
 export class RegisterComponent {
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  email = new FormControl('', [Validators.required, Validators.email]);
+  email = new FormControl(
+    '',
+    [Validators.required, Validators.email],
+    [this.emailTaken.validate]
+  );
   age = new FormControl('', [
     Validators.required,
     Validators.min(18),
@@ -37,18 +43,24 @@ export class RegisterComponent {
   alertMessage = 'Please, wait! Your account is being created. ';
   alertColor = 'blue';
 
-  registerForm = new FormGroup({
-    name: this.name,
-    email: this.email,
-    age: this.age,
-    password: this.password,
-    confirm_password: this.confirm_password,
-    phoneNumber: this.phoneNumber,
-  });
+  registerForm = new FormGroup(
+    {
+      name: this.name,
+      email: this.email,
+      age: this.age,
+      password: this.password,
+      confirm_password: this.confirm_password,
+      phoneNumber: this.phoneNumber,
+    },
+    [RegisterValidators.match('password', 'confirm_password')]
+  );
 
   inSubmission = false;
 
-  constructor(private registerService: RegisterService) {}
+  constructor(
+    private registerService: RegisterService,
+    private emailTaken: EmailTaken
+  ) {}
 
   async onSubmit() {
     this.showAlert = true;
@@ -64,7 +76,7 @@ export class RegisterComponent {
       this.inSubmission = false;
     } catch (err) {
       console.error(err);
-      this.alertMessage = `${err}`;
+      this.alertMessage = this.handleServerError(err);
       this.alertColor = 'red';
       this.inSubmission = false;
       return;
@@ -73,6 +85,29 @@ export class RegisterComponent {
     this.alertMessage = 'Success! Your account has been created!';
     this.alertColor = 'green';
     this.registerForm.reset();
+  }
+
+  handleServerError(err: any): string {
+    switch (err.code) {
+      case 'auth/missing-email':
+        this.alertMessage = `Missing email address`;
+        break;
+      case 'auth/invalid-email':
+        this.alertMessage = `Insert your email address and password`;
+        break;
+      case 'auth/email-already-in-use':
+        this.alertMessage = `This email address is already in use by another account`;
+        break;
+      case 'auth/user-not-found':
+        this.alertMessage = `User not found. Verify your credentials`;
+        break;
+      case 'auth/wrong-password':
+        this.alertMessage = `Password and email address mismatch`;
+        break;
+      default:
+        this.alertMessage = `Something went wrong`;
+    }
+    return this.alertMessage;
   }
 
   //GETTERS

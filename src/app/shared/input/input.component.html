@@ -40,4 +40,10 @@
     Passwords must be at least 8 characters long, have 1 uppercase letter, 1
     lowercase, and 1 number
   </p>
+  <p class="text-red-400" *ngIf="control.errors?.noMatch">
+    Passwords do not match
+  </p>
+  <p class="text-red-400" *ngIf="control.errors?.emailTaken">
+    This email has been already taken by another user
+  </p>
 </ng-container>
