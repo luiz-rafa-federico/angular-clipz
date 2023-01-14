@@ -10,18 +10,11 @@ import { environment } from 'src/environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { HomeComponent } from './home/home.component';
-import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
 import { VideoModule } from './video/video.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavComponent,
-    HomeComponent,
-    UploadComponent,
-    AboutComponent,
-  ],
+  declarations: [AppComponent, NavComponent, HomeComponent, AboutComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

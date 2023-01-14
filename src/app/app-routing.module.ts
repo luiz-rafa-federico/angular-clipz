@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
-import { UploadComponent } from './upload/upload.component';
+import { UploadComponent } from './video/upload/upload.component';
 
 const routes: Routes = [
   {
@@ -10,13 +10,10 @@ const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: 'manage',
+    path: 'video',
+    data: { authOnly: true },
     loadChildren: () =>
       import('./video/video.module').then((m) => m.VideoModule),
-  },
-  {
-    path: 'upload',
-    component: UploadComponent,
   },
   {
     path: 'about',
