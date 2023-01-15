@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { redirectUnauthorizedTo } from '@angular/fire/compat/auth-guard';
 
 @Injectable({
   providedIn: 'root',
@@ -23,3 +24,5 @@ export class CommonFunctionsService {
     }
   }
 }
+
+export const redirectUnauthorizedToHome = () => redirectUnauthorizedTo('/');
