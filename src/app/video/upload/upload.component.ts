@@ -21,7 +21,6 @@ export class UploadComponent implements OnDestroy {
   file: File | null = null;
   fileUploaded = false;
   title = new FormControl('', [Validators.required, Validators.minLength(3)]);
-
   uploadForm = new FormGroup({
     title: this.title,
   });
