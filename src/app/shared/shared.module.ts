@@ -27,6 +27,7 @@ import { EventBlockerDirective } from './directives/event-blocker.directive';
     InputComponent,
     AlertComponent,
     EventBlockerDirective,
+    ReactiveFormsModule,
   ],
 })
 export class SharedModule {}

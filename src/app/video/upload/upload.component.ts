@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { timeStamp } from 'console';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { v4 as uuid } from 'uuid';
+import { last, switchMap } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import firebase from 'firebase/compat/app';
+import { ClipService } from 'src/app/services/clip.service';
 
 @Component({
   selector: 'app-upload',
@@ -9,8 +15,27 @@ import { timeStamp } from 'console';
 export class UploadComponent implements OnInit {
   isDragOver = false;
   file: File | null = null;
+  fileUploaded = false;
+  title = new FormControl('', [Validators.required, Validators.minLength(3)]);
 
-  constructor() {}
+  uploadForm = new FormGroup({
+    title: this.title,
+  });
+  alertMessage = 'Please wait! Your clip is being uploaded';
+  alertColor = 'blue';
+  showAlert = false;
+  inSubmission = false;
+  percentage = 0;
+  showPercentage = false;
+  user: firebase.User | null = null;
+
+  constructor(
+    private storage: AngularFireStorage,
+    private auth: AngularFireAuth,
+    private clipsService: ClipService
+  ) {
+    auth.user.subscribe((user) => (this.user = user));
+  }
 
   ngOnInit(): void {}
 
@@ -21,7 +46,63 @@ export class UploadComponent implements OnInit {
 
     if (!this.file || this.file.type !== 'video/mp4') {
       // video/mp4 is a mime type (type/subtype)
+
+      this.fileUploaded = false;
       return;
     }
+
+    this.title.setValue(this.file.name.replace(/\.[^/.]+$/, ''));
+    this.fileUploaded = true;
+  }
+
+  uploadFile() {
+    this.alertMessage = 'Please wait! Your clip is being uploaded';
+    this.alertColor = 'blue';
+    this.showAlert = true;
+    this.inSubmission = true;
+    this.showPercentage = true;
+
+    const clipFileName = uuid();
+    const cliPath = `clips/${clipFileName}.mp4`;
+
+    const fileUploaded = this.storage.upload(cliPath, this.file);
+    const clipRef = this.storage.ref(cliPath);
+
+    fileUploaded
+      .percentageChanges()
+      .subscribe((progress) => (this.percentage = (progress as number) / 100));
+
+    fileUploaded
+      .snapshotChanges()
+      .pipe(
+        last(),
+        switchMap(() => clipRef.getDownloadURL())
+      )
+      .subscribe({
+        next: (url) => {
+          const clip = {
+            uid: this.user?.uid as string,
+            displayName: this.user?.displayName as string,
+            title: this.title.value,
+            fileName: `${clipFileName}.mp4`,
+            url,
+          };
+
+          this.clipsService.createClip(clip);
+
+          this.alertMessage =
+            'Success! Your clip is now ready to be shared with the world';
+          this.alertColor = 'green';
+          this.showPercentage = false;
+        },
+        error: (error) => {
+          this.alertMessage = 'Failed to upload file. Try again later';
+          this.alertColor = 'red';
+          this.inSubmission = true;
+          this.showPercentage = false;
+
+          console.error(error);
+        },
+      });
   }
 }
