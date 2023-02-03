@@ -33,6 +33,7 @@ export class UploadComponent implements OnDestroy {
   showPercentage = false;
   user: firebase.User | null = null;
   task?: AngularFireUploadTask;
+  screenshots: string[] = [];
 
   constructor(
     private storage: AngularFireStorage,
@@ -49,7 +50,7 @@ export class UploadComponent implements OnDestroy {
     this.task?.cancel();
   }
 
-  storeFile($evt: Event) {
+  async storeFile($evt: Event) {
     this.isDragOver = false;
 
     this.file = ($evt as DragEvent).dataTransfer
@@ -62,6 +63,8 @@ export class UploadComponent implements OnDestroy {
       this.fileUploaded = false;
       return;
     }
+
+    this.screenshots = await this.ffpmeg.getScreenshots(this.file);
 
     this.title.setValue(this.file.name.replace(/\.[^/.]+$/, ''));
     this.fileUploaded = true;
