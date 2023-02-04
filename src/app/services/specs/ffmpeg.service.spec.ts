@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FfmpegService } from './ffmpeg.service';
+import { FfmpegService } from '../ffmpeg.service';
 
 describe('FfmpegService', () => {
   let service: FfmpegService;
