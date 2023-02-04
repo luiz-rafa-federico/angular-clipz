@@ -5,7 +5,7 @@ import {
 } from '@angular/fire/compat/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
-import { last, switchMap } from 'rxjs';
+import { combineLatest, last, switchMap } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
 import { ClipService } from 'src/app/services/clip.service';
@@ -34,6 +34,8 @@ export class UploadComponent implements OnDestroy {
   user: firebase.User | null = null;
   task?: AngularFireUploadTask;
   screenshots: string[] = [];
+  selectedScreenshot = '';
+  screenshotTask?: AngularFireUploadTask;
 
   constructor(
     private storage: AngularFireStorage,
@@ -51,6 +53,10 @@ export class UploadComponent implements OnDestroy {
   }
 
   async storeFile($evt: Event) {
+    if (this.ffpmeg.isRunning) {
+      return;
+    }
+
     this.isDragOver = false;
 
     this.file = ($evt as DragEvent).dataTransfer
@@ -66,11 +72,13 @@ export class UploadComponent implements OnDestroy {
 
     this.screenshots = await this.ffpmeg.getScreenshots(this.file);
 
+    this.selectedScreenshot = this.screenshots[0];
+
     this.title.setValue(this.file.name.replace(/\.[^/.]+$/, ''));
     this.fileUploaded = true;
   }
 
-  uploadFile() {
+  async uploadFile() {
     this.uploadForm.disable();
     this.alertMessage = 'Please wait! Your clip is being uploaded';
     this.alertColor = 'blue';
@@ -81,12 +89,28 @@ export class UploadComponent implements OnDestroy {
     const clipFileName = uuid();
     const cliPath = `clips/${clipFileName}.mp4`;
 
+    const screenshotBlob = await this.ffpmeg.blobFromUrl(
+      this.selectedScreenshot
+    );
+    const screenshotPath = `screenshots/${clipFileName}.png`;
+
+    this.screenshotTask = this.storage.upload(screenshotPath, screenshotBlob);
+
     this.task = this.storage.upload(cliPath, this.file);
     const clipRef = this.storage.ref(cliPath);
 
-    this.task
-      .percentageChanges()
-      .subscribe((progress) => (this.percentage = (progress as number) / 100));
+    combineLatest([
+      this.task.percentageChanges(),
+      this.screenshotTask.percentageChanges(),
+    ]).subscribe((progress) => {
+      const [clipProgress, screenshotProgress] = progress;
+
+      if (!clipProgress || !screenshotProgress) return;
+
+      const total = clipProgress + screenshotProgress;
+
+      this.percentage = (total as number) / 200;
+    });
 
     this.task
       .snapshotChanges()
