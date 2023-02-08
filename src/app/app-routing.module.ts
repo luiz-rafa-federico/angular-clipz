@@ -6,6 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AngularFireAuthGuard } from '@angular/fire/compat/auth-guard';
 import { redirectUnauthorizedToHome } from './services/common-functions.service';
+import { ClipService } from './services/clip.service';
 
 const routes: Routes = [
   {
@@ -22,6 +23,9 @@ const routes: Routes = [
   {
     path: 'clip/:id',
     component: ClipComponent,
+    resolve: {
+      clip: ClipService,
+    },
   },
   {
     path: 'about',
