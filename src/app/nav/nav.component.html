@@ -18,7 +18,7 @@
         <ng-template #authLinks>
           <li>
             <a
-              class="px-2"
+              class="px-2 link-test"
               routerLinkActive="text-indigo-400"
               routerLink="/video/manage"
               [routerLinkActiveOptions]="{ exact: true }"
@@ -28,7 +28,7 @@
           </li>
           <li>
             <a
-              class="px-2"
+              class="px-2 link-test"
               routerLinkActive="text-indigo-400"
               routerLink="video/upload"
               [routerLinkActiveOptions]="{ exact: true }"
@@ -36,14 +36,17 @@
             >
           </li>
           <li>
-            <p class="px-2 clickable" (click)="this.auth.logout($event)">
+            <p
+              class="px-2 clickable link-test"
+              (click)="this.auth.logout($event)"
+            >
               Logout
             </p>
           </li>
         </ng-template>
         <li>
           <a
-            class="px-2"
+            class="px-2 link-test"
             routerLinkActive="text-indigo-400"
             routerLink="/about"
             [routerLinkActiveOptions]="{ exact: true }"
