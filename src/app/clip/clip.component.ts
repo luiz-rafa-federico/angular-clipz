@@ -29,11 +29,11 @@ export class ClipComponent implements OnInit {
 
     this.route.data.subscribe((data) => {
       this.clip = data.clip as IClip;
-    });
 
-    this.player?.src({
-      src: this.clip?.url as string,
-      type: 'video/mp4',
+      this.player?.src({
+        src: this.clip?.url as string,
+        type: 'video/mp4',
+      });
     });
   }
 }
